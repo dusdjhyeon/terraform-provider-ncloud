@@ -61,7 +61,7 @@ func (d *postgresqlProductsDataSource) Configure(_ context.Context, req datasour
 	d.config = config
 }
 
-func (m *postgresqlProductsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *postgresqlProductsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data postgresqlProductList
 
 	if !d.config.SupportVPC {

@@ -108,11 +108,11 @@ func (d *postgresqlImageProductsDataSource) Read(ctx context.Context, req dataso
 	}
 
 	reqParams := &vpostgresql.GetCloudPostgresqlImageProductListRequest{
-		RegionCode: &m.config.RegionCode,
+		RegionCode: &d.config.RegionCode,
 	}
 	tflog.Info(ctx, "GetPostgresqlImageProductList reqParams="+common.MarshalUncheckedString(reqParams))
 
-	postgresqlImageProductResp, err := m.config.Client.Vpostgresql.V2Api.GetCloudPostgresqlImageProductList(reqParams)
+	postgresqlImageProductResp, err := d.config.Client.Vpostgresql.V2Api.GetCloudPostgresqlImageProductList(reqParams)
 	if err != nil {
 		resp.Diagnostics.AddError("READING ERROR", err.Error())
 		return
@@ -169,8 +169,8 @@ func flattenPostgresqlImageProduct(list []*vpostgresql.Product) []*postgresqlIma
 
 func (d *postgresqlImageProductsDataSourceModel) refreshFromOutput(ctx context.Context, list []*postgresqlImageProduct) {
 	imageProductListValue, _ := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: postgresqlImageProduct{}.attrTypes()}, list)
-	m.ImageProductList = imageProductListValue
-	m.ID = types.StringValue("")
+	d.ImageProductList = imageProductListValue
+	d.ID = types.StringValue("")
 }
 
 type postgresqlImageProductsDataSourceModel struct {
@@ -210,10 +210,10 @@ func (d postgresqlImageProduct) attrTypes() map[string]attr.Type {
 }
 
 func (d *postgresqlImageProduct) refreshFromOutput(output *vpostgresql.Product) {
-	m.ProductCode = types.StringPointerValue(output.ProductCode)
-	m.ProductName = types.StringPointerValue(output.ProductName)
-	m.ProductType = types.StringPointerValue(output.ProductType.Code)
-	m.PlatformType = types.StringPointerValue(output.PlatformType.Code)
-	m.OsInformation = types.StringPointerValue(output.OsInformation)
-	m.GenerationCode = types.StringPointerValue(output.GenerationCode)
+	d.ProductCode = types.StringPointerValue(output.ProductCode)
+	d.ProductName = types.StringPointerValue(output.ProductName)
+	d.ProductType = types.StringPointerValue(output.ProductType.Code)
+	d.PlatformType = types.StringPointerValue(output.PlatformType.Code)
+	d.OsInformation = types.StringPointerValue(output.OsInformation)
+	d.GenerationCode = types.StringPointerValue(output.GenerationCode)
 }
