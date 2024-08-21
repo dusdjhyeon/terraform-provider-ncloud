@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"regexp"
 	"testing"
 
@@ -58,10 +59,10 @@ func TestAccResourceNcloudPostgresql_vpc_isHa(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { TestAccPreCheck(t) },
 		ProtoV6ProviderFactories: ProtoV6ProviderFactories,
-		CheckDestroy:             testAccCheckDestroy,
+		CheckDestroy:             testAccCheckPostgresqlDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPostgresqlVpcConfigIsHa(testPostgresqName, true, false, false),
+				Config: testAccPostgresqlVpcConfigIsHa(testPostgresqlName, true, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPostgresqlExistsWithProvider(resourceName, &postgresqlInstance, GetTestProvider(true)),
 					resource.TestMatchResourceAttr(resourceName, "id", regexp.MustCompile(`^\d_$`)),
@@ -178,7 +179,7 @@ func checkNoInstanceResponse(err error) bool {
 	return strings.Contains(err.Error(), "5001017")
 }
 
-func testAccPostgresql페ㅊConfig(testPostgresqlName string) string {
+func testAccPostgresqlConfig(testPostgresqlName string) string {
 	return fmt.Sprintf(`
 resource "ncloud_vpc" "test_vpc" {
 	name         = "%[1]s"
@@ -206,7 +207,7 @@ resource "ncloud_postgresql" "postgresql" {
 `, testPostgresqlName)
 }
 
-func testAccPostgresqlVpcConfigIsHa(testPostgresqlName string, isHa boo, isMultiZone bool, isStorageEncryption bool) string {
+func testAccPostgresqlVpcConfigIsHa(testPostgresqlName string, isHa bool, isMultiZone bool, isStorageEncryption bool) string {
 	return fmt.Sprintf(`
 resource "ncloud_vpc" "test_vpc" {
 	name               = "%[1]s"
@@ -279,7 +280,7 @@ resource "ncloud_postgresql" "postgresql" {
 `, testPostgresqlName, isHa, isMultiZone, isStorageEncryption)
 }
 
-func testAccPostgresqlVpcConfigBae(name string) string {
+func testAccPostgresqlVpcConfigBase(name string) string {
 	return fmt.Sprintf(`
 resource "ncloud_vpc" "test_vpc" {
 	name               = "%[1]s"

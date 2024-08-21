@@ -143,7 +143,7 @@ func (d *postgresqlDataSource) Schema(ctx context.Context, req datasource.Schema
 							Computed: true,
 						},
 						"memory_size": schema.Int64Attribute{
-							Computed: ture,
+							Computed: true,
 						},
 						"cpu_count": schema.Int64Attribute{
 							Computed: true,
@@ -303,34 +303,29 @@ func (d postgresqlServerDataSourceModel) attrTypes() map[string]attr.Type {
 func (d *postgresqlDataSourceModel) refreshFromOutput(ctx context.Context, output *vpostgresql.CloudPostgresqlInstance) {
 	d.ID = types.StringPointerValue(output.CloudPostgresqlInstanceNo)
 	d.ServiceName = types.StringPointerValue(output.CloudPostgresqlServiceName)
-	d.DatabaseName = types.StringPointerValue(output.CloudPostgresqlDatabaseName)
 	d.ImageProductCode = types.StringPointerValue(output.CloudPostgresqlImageProductCode)
 	d.VpcNo = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].VpcNo)
 	d.SubnetNo = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].SubnetNo)
-	d.RegionCode = types.StringPointerValue(output.CloudRedisServerInstanceList[0].RegionCode)
+	d.RegionCode = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].RegionCode)
 	d.IsMultiZone = types.BoolPointerValue(output.IsMultiZone)
 	d.IsHa = types.BoolPointerValue(output.IsHa)
-	d.IsStorageEncryption = types.BoolPointerValue(output.IsStorageEncryption)
 	d.IsBackup = types.BoolPointerValue(output.IsBackup)
 	d.BackupTime = types.StringPointerValue(output.BackupTime)
-	d.BackupFileStorageCount = common.Int64ValueFromInt32(output.BackupFileStorageCount)
 	d.BackupFileRetentionPeriod = common.Int64ValueFromInt32(output.BackupFileRetentionPeriod)
 	d.Port = common.Int64ValueFromInt32(output.CloudPostgresqlPort)
-	d.ClientCidr = types.StringPointerValue(output.ClientCidr)
-	d.DataStorageTypeCode = types.StringPointerValue(output.DataStorageTypeCode)
 	d.EngineVersion = types.StringPointerValue(output.EngineVersion)
 
 	acgList, _ := types.ListValueFrom(ctx, types.StringType, output.AccessControlGroupNoList)
 	d.AccessControlGroupNoList = acgList
 	configList, _ := types.ListValueFrom(ctx, types.StringType, output.CloudPostgresqlConfigList)
-	d.CloudPostgresqlConfigList = configList
+	d.PostgresqlConfigList = configList
 
 	var serverList []postgresqlServer
 	for _, server := range output.CloudPostgresqlServerInstanceList {
 		postgresqlServerInstance := postgresqlServer{
 			ServerInstanceNo: types.StringPointerValue(server.CloudPostgresqlServerInstanceNo),
 			ServerName:       types.StringPointerValue(server.CloudPostgresqlServerName),
-			ServerRole:       types.StringPointerValue(server.CloudPostgresqlServerRole),
+			ServerRole:       types.StringPointerValue(server.CloudPostgresqlServerRole.Code),
 			IsPublicSubnet:   types.BoolPointerValue(server.IsPublicSubnet),
 			PublicDomain:     types.StringPointerValue(server.PublicDomain),
 			PrivateIp:        types.StringPointerValue(server.PrivateIp),

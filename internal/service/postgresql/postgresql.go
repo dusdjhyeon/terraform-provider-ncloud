@@ -2,7 +2,6 @@ package postgresql
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -27,7 +26,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -57,7 +55,7 @@ func (r *postgresqlResource) Configure(_ context.Context, req resource.Configure
 		return
 	}
 
-	config, ok := req.ProviderData(*conn.ProviderConfig)
+	config, ok := req.ProviderData.(*conn.ProviderConfig)
 
 	if !ok {
 		resp.Diagnostics.AddError(
@@ -75,7 +73,7 @@ func (r *postgresqlResource) Metadata(_ context.Context, req resource.MetadataRe
 }
 
 func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
-	resp.Schema = shcema.Schema{
+	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"service_name": schema.StringAttribute{
 				Required: true,
@@ -121,10 +119,7 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Computed: true,
 			},
 			"vpc_no": schema.StringAttribute{
-				Required: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
+				Computed: true,
 			},
 			"subnet_no": schema.StringAttribute{
 				Required: true,
@@ -235,28 +230,27 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					int64validator.Between(1, 30),
 				},
 			},
-			"backup_file_storage_count": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-					int64planmodifier.RequiresReplace(),
-				},
-				Validators: []validator.Int64{
-					int64validator.Between(1, 30),
-				},
-			},
-			"is_backup_file_compression": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.RequiresReplace(),
-				},
-				Description: "default: true",
-			},
+			// "backup_file_storage_count": schema.Int64Attribute{
+			// 	Optional: true,
+			// 	Computed: true,
+			// 	PlanModifiers: []planmodifier.Int64{
+			// 		int64planmodifier.UseStateForUnknown(),
+			// 		int64planmodifier.RequiresReplace(),
+			// 	},
+			// 	Validators: []validator.Int64{
+			// 		int64validator.Between(1, 30),
+			// 	},
+			// },
+			// "is_backup_file_compression": schema.BoolAttribute{
+			// 	Optional: true,
+			// 	Computed: true,
+			// 	PlanModifiers: []planmodifier.Bool{
+			// 		boolplanmodifier.RequiresReplace(),
+			// 	},
+			// 	Description: "default: true",
+			// },
 			"is_automatic_backup": schema.BoolAttribute{
 				Optional: true,
-				Computed: true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.RequiresReplace(),
 				},
@@ -307,7 +301,7 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				ElementType: types.StringType,
 				Computed:    true,
 			},
-			"postgresql_server_lit": schema.ListNestedAttribute{
+			"postgresql_server_list": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -342,7 +336,7 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 							Computed: true,
 						},
 						"memory_size": schema.Int64Attribute{
-							Computed: ture,
+							Computed: true,
 						},
 						"cpu_count": schema.Int64Attribute{
 							Computed: true,
@@ -384,7 +378,7 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 		)
 	}
 
-	reqParams := &vpostgresql.CreateCloudPostgresqlInstanceList{
+	reqParams := &vpostgresql.CreateCloudPostgresqlInstanceRequest{
 		RegionCode:                      &r.config.RegionCode,
 		CloudPostgresqlServiceName:      plan.ServiceName.ValueStringPointer(),
 		CloudPostgresqlServerNamePrefix: plan.ServerNamePrefix.ValueStringPointer(),
@@ -406,7 +400,7 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	if !plan.ImageProductCode.IsNull() {
-		reqParams.CloudPostgresqlImageProductCode = plan.ImageProductCode.ValueStringpointer()
+		reqParams.CloudPostgresqlImageProductCode = plan.ImageProductCode.ValueStringPointer()
 	}
 
 	if !plan.DataStorageTypeCode.IsNull() {
@@ -482,13 +476,13 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 		reqParams.IsAutomaticBackup = plan.IsAutomaticBackup.ValueBoolPointer()
 	}
 
-	if !plan.IsBackupFileCompression.IsNull() && !plan.IsBackupFileCompression.IsUnknown() {
-		reqParams.IsBackupFileCompression = plan.IsBackupFileCompression.ValueBoolPointer()
-	}
+	// if !plan.IsBackupFileCompression.IsNull() && !plan.IsBackupFileCompression.IsUnknown() {
+	// 	reqParams.IsBackupFileCompression = plan.IsBackupFileCompression.ValueBoolPointer()
+	// }
 
-	if !plan.BackupFileStorageCount.IsNull() && !plan.BackupFileStorageCount.IsUnknown() {
-		reqParams.BackupFileStorageCount = ncloud.Int32(int32(plan.BackupFileStorageCount.ValueInt64()))
-	}
+	// if !plan.BackupFileStorageCount.IsNull() && !plan.BackupFileStorageCount.IsUnknown() {
+	// 	reqParams.BackupFileStorageCount = ncloud.Int32(int32(plan.BackupFileStorageCount.ValueInt64()))
+	// }
 
 	if reqParams.IsBackup == nil || *reqParams.IsBackup {
 		if reqParams.IsAutomaticBackup == nil || *reqParams.IsAutomaticBackup {
@@ -548,7 +542,7 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 }
 
-func (r *postgresqlResource) Read(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *postgresqlResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state postgresqlResourceModel
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -575,10 +569,10 @@ func (r *postgresqlResource) Read(ctx context.Context, req resource.CreateReques
 	}
 }
 
-func (r *postgresqlResource) Update(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *postgresqlResource) Update(_ context.Context, _ resource.UpdateRequest, _ *resource.UpdateResponse) {
 }
 
-func (r *postgresqlResource) Delete(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *postgresqlResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state postgresqlResourceModel
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -604,7 +598,7 @@ func (r *postgresqlResource) Delete(ctx context.Context, req resource.CreateRequ
 	}
 }
 
-func GetPostgresqlInstance(ctx context.Context, config *conn.ProviderConfig, no string) (*postgresql.CloudPostgresqlInstance, error) {
+func GetPostgresqlInstance(ctx context.Context, config *conn.ProviderConfig, no string) (*vpostgresql.CloudPostgresqlInstance, error) {
 	reqParams := &vpostgresql.GetCloudPostgresqlInstanceDetailRequest{
 		RegionCode:                &config.RegionCode,
 		CloudPostgresqlInstanceNo: ncloud.String(no),
@@ -622,10 +616,6 @@ func GetPostgresqlInstance(ctx context.Context, config *conn.ProviderConfig, no 
 	}
 
 	return resp.CloudPostgresqlInstanceList[0], nil
-}
-
-func (r *postgresqlResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 func waitPostgresqlCreation(ctx context.Context, config *conn.ProviderConfig, id string) (*vpostgresql.CloudPostgresqlInstance, error) {
@@ -707,7 +697,7 @@ func waitPostgresqlDeletion(ctx context.Context, config *conn.ProviderConfig, id
 type postgresqlResourceModel struct {
 	ID                        types.String `tfsdk:"id"`
 	ServiceName               types.String `tfsdk:"service_name"`
-	ServerNamePrefix          types.String `tfsdk:"server_name_prefix`
+	ServerNamePrefix          types.String `tfsdk:"server_name_prefix"`
 	DatabaseName              types.String `tfsdk:"database_name"`
 	VpcNo                     types.String `tfsdk:"vpc_no"`
 	SubnetNo                  types.String `tfsdk:"subnet_no"`
@@ -722,9 +712,9 @@ type postgresqlResourceModel struct {
 	IsStorageEncryption       types.Bool   `tfsdk:"is_storage_encryption"`
 	IsBackup                  types.Bool   `tfsdk:"is_backup"`
 	BackupTime                types.String `tfsdk:"backup_time"`
-	BackupFileStorageCount    types.Int64  `tfsdk:"backup_file_storage_count"`
+	//BackupFileStorageCount    types.Int64  `tfsdk:"backup_file_storage_count"`
 	BackupFileRetentionPeriod types.Int64  `tfsdk:"backup_file_retention_period"`
-	IsBackupFileCompression   types.Bool   `tfsdk:"is_backup_file_compression"`
+	//IsBackupFileCompression   types.Bool   `tfsdk:"is_backup_file_compression"`
 	IsAutomaticBackup         types.Bool   `tfsdk:"is_automatic_backup"`
 	Port                      types.Int64  `tfsdk:"port"`
 	ClientCidr                types.String `tfsdk:"client_cidr"`
@@ -774,40 +764,32 @@ func (r postgresqlServer) attrTypes() map[string]attr.Type {
 func (r *postgresqlResourceModel) refreshFromOutput(ctx context.Context, output *vpostgresql.CloudPostgresqlInstance) {
 	r.ID = types.StringPointerValue(output.CloudPostgresqlInstanceNo)
 	r.ServiceName = types.StringPointerValue(output.CloudPostgresqlServiceName)
-	r.ServerNamePrefix = types.StringPointerValue(output.CloudPostgresqlServerNamePrefix)
-	r.DatabaseName = types.StringPointerValue(output.CloudPostgresqlDatabaseName)
 	r.ImageProductCode = types.StringPointerValue(output.CloudPostgresqlImageProductCode)
 	r.VpcNo = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].VpcNo)
 	r.SubnetNo = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].SubnetNo)
-	r.RegionCode = types.StringPointerValue(output.CloudRedisServerInstanceList[0].RegionCode)
-	r.SecondarySubnetNo = types.StringPointerValue(output.SecondarySubnetNo)
-	r.UserName = types.StringPointerValue(output.CloudPostgresqlUserName)
-	r.UserPassword = types.StringPointerValue(output.CloudPostgresqlUserPassword)
+	r.RegionCode = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].RegionCode)
 	r.IsMultiZone = types.BoolPointerValue(output.IsMultiZone)
 	r.IsHa = types.BoolPointerValue(output.IsHa)
-	r.IsStorageEncryption = types.BoolPointerValue(output.IsStorageEncryption)
 	r.IsBackup = types.BoolPointerValue(output.IsBackup)
-	r.BackupTime = types.StringPointerValue(output.BackupTime)
-	r.BackupFileStorageCount = common.Int64ValueFromInt32(output.BackupFileStorageCount)
-	r.BackupFileRetentionPeriod = common.Int64ValueFromInt32(output.BackupFileRetentionPeriod)
-	r.IsBackupFileCompression = types.BoolPointerValue(output.IsBackupFileCompression)
-	r.IsAutomaticBackup = types.BoolPointerValue(output.IsAutomaticBackup)
 	r.Port = common.Int64ValueFromInt32(output.CloudPostgresqlPort)
-	r.ClientCidr = types.StringPointerValue(output.ClientCidr)
-	r.DataStorageTypeCode = types.StringPointerValue(output.DataStorageTypeCode)
+	r.BackupTime = types.StringPointerValue(output.BackupTime)
+	r.BackupFileRetentionPeriod = common.Int64ValueFromInt32(output.BackupFileRetentionPeriod)
+	//r.IsBackupFileCompression
+	//r.BackupFileStorageCount
+	r.IsStorageEncryption = types.BoolPointerValue(output.CloudPostgresqlServerInstanceList[0].IsStorageEncryption)
 	r.EngineVersion = types.StringPointerValue(output.EngineVersion)
 
 	acgList, _ := types.ListValueFrom(ctx, types.StringType, output.AccessControlGroupNoList)
 	r.AccessControlGroupNoList = acgList
 	configList, _ := types.ListValueFrom(ctx, types.StringType, output.CloudPostgresqlConfigList)
-	r.CloudPostgresqlConfigList = configList
+	r.PostgresqlConfigList = configList
 
 	var serverList []postgresqlServer
 	for _, server := range output.CloudPostgresqlServerInstanceList {
 		postgresqlServerInstance := postgresqlServer{
 			ServerInstanceNo: types.StringPointerValue(server.CloudPostgresqlServerInstanceNo),
 			ServerName:       types.StringPointerValue(server.CloudPostgresqlServerName),
-			ServerRole:       types.StringPointerValue(server.CloudPostgresqlServerRole),
+			ServerRole:       types.StringPointerValue(server.CloudPostgresqlServerRole.Code),
 			IsPublicSubnet:   types.BoolPointerValue(server.IsPublicSubnet),
 			PublicDomain:     types.StringPointerValue(server.PublicDomain),
 			PrivateIp:        types.StringPointerValue(server.PrivateIp),

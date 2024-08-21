@@ -21,11 +21,11 @@ var (
 	_ datasource.DataSourceWithConfigure = &postgresqlProductsDataSource{}
 )
 
-func NewPostgresqlProductsDataSource() datasource.Datasource {
+func NewPostgresqlProductsDataSource() datasource.DataSource {
 	return &postgresqlProductsDataSource{}
 }
 
-type postgrdsqlProductsDataSource struct {
+type postgresqlProductsDataSource struct {
 	config *conn.ProviderConfig
 }
 

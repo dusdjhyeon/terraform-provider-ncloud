@@ -99,8 +99,8 @@ func (p *fwprovider) DataSources(ctx context.Context) []func() datasource.DataSo
 	dataSources = append(dataSources, mssql.NewMssqlImageProductsDataSource)
 	dataSources = append(dataSources, mssql.NewMssqlProductsDataSource)
 	dataSources = append(dataSources, postgresql.NewPostgresqlDataSource)
-	dataSources = append(datasources, postgresql.NewPostgresqlProductsDataSource)
-	dataSources = append(datasources, postgresql.NewPostgresqlImageProductsDataSource)
+	dataSources = append(dataSources, postgresql.NewPostgresqlProductsDataSource)
+	dataSources = append(dataSources, postgresql.NewPostgresqlImageProductsDataSource)
 
 	if err := errs.ErrorOrNil(); err != nil {
 		tflog.Warn(ctx, "registering resources", map[string]interface{}{
