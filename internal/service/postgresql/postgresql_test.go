@@ -65,7 +65,7 @@ func TestAccResourceNcloudPostgresql_vpc_isHa(t *testing.T) {
 				Config: testAccPostgresqlVpcConfigIsHa(testPostgresqlName, true, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPostgresqlExistsWithProvider(resourceName, &postgresqlInstance, GetTestProvider(true)),
-					resource.TestMatchResourceAttr(resourceName, "id", regexp.MustCompile(`^\d_$`)),
+					resource.TestMatchResourceAttr(resourceName, "id", regexp.MustCompile(`^\d+$`)),
 					resource.TestCheckResourceAttr(resourceName, "is_ha", "true"),
 					resource.TestCheckResourceAttr(resourceName, "is_multi_zone", "false"),
 					resource.TestCheckResourceAttr(resourceName, "is_storage_encryption", "false"),
