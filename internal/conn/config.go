@@ -27,6 +27,7 @@ import (
 	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vmongodb"
 	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vmssql"
 	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vmysql"
+	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vpostgresql"
 	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vpc"
 	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vsourcedeploy"
 	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/services/vsourcepipeline"
@@ -61,6 +62,7 @@ type NcloudAPIClient struct {
 	Vautoscaling    *vautoscaling.APIClient
 	Vloadbalancer   *vloadbalancer.APIClient
 	Vnks            *vnks.APIClient
+	Vpostgresql     *vpostgresql.APIClient
 	Sourcecommit    *sourcecommit.APIClient
 	Sourcebuild     *sourcebuild.APIClient
 	Sourcepipeline  *sourcepipeline.APIClient
@@ -93,6 +95,7 @@ func (c *Config) Client() (*NcloudAPIClient, error) {
 		Vautoscaling:    vautoscaling.NewAPIClient(vautoscaling.NewConfiguration(apiKey)),
 		Vloadbalancer:   vloadbalancer.NewAPIClient(vloadbalancer.NewConfiguration(apiKey)),
 		Vnks:            vnks.NewAPIClient(vnks.NewConfigurationWithUserAgent(c.Region, fmt.Sprintf("Ncloud Terraform Provider/%s", version), apiKey)),
+		Vpostgresql:     vpostgresql.NewAPIClient(vpostgresql.NewConfiguration(apiKey)),
 		Sourcecommit:    sourcecommit.NewAPIClient(sourcecommit.NewConfiguration(c.Region, apiKey)),
 		Sourcebuild:     sourcebuild.NewAPIClient((sourcebuild.NewConfiguration(c.Region, apiKey))),
 		Sourcepipeline:  sourcepipeline.NewAPIClient(sourcepipeline.NewConfiguration(c.Region, apiKey)),

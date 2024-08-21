@@ -3,7 +3,7 @@ module github.com/terraform-providers/terraform-provider-ncloud
 go 1.19
 
 require (
-	github.com/NaverCloudPlatform/ncloud-sdk-go-v2 v1.6.11
+	github.com/NaverCloudPlatform/ncloud-sdk-go-v2 v1.6.14
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/terraform-plugin-framework v1.3.2
 	github.com/hashicorp/terraform-plugin-go v0.17.0
@@ -25,7 +25,7 @@ require (
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.5.9
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-checkpoint v0.5.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect

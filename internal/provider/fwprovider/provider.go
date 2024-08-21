@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/conn"
+	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/postgresql"
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/mongodb"
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/mssql"
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/mysql"
@@ -97,6 +98,9 @@ func (p *fwprovider) DataSources(ctx context.Context) []func() datasource.DataSo
 	dataSources = append(dataSources, mssql.NewMssqlDataSource)
 	dataSources = append(dataSources, mssql.NewMssqlImageProductsDataSource)
 	dataSources = append(dataSources, mssql.NewMssqlProductsDataSource)
+	dataSources = append(dataSources, postgresql.NewPostgresqlDataSource)
+	dataSources = append(datasources, postgresql.NewPostgresqlProductsDataSource)
+	dataSources = append(datasources, postgresql.NewPostgresqlImageProductsDataSource)
 
 	if err := errs.ErrorOrNil(); err != nil {
 		tflog.Warn(ctx, "registering resources", map[string]interface{}{
@@ -123,6 +127,7 @@ func (p *fwprovider) Resources(ctx context.Context) []func() resource.Resource {
 	resources = append(resources, redis.NewRedisConfigGroupResource)
 	resources = append(resources, redis.NewRedisResource)
 	resources = append(resources, mssql.NewMssqlResource)
+	resources = append(resources, postgresql.NewPostgresqlResource)
 
 	if err := errs.ErrorOrNil(); err != nil {
 		tflog.Warn(ctx, "registering resources", map[string]interface{}{
