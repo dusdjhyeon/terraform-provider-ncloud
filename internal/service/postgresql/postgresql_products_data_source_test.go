@@ -19,7 +19,7 @@ func TestAccDataSourceNcloudPostgresqlProducts_basic(t *testing.T) {
 			{
 				Config: testAccDataSourceNcloudPostgresqlProductsConfig_basic(imageProductCode, productType),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.ncloud_postgresql_products.all", "product_list.0.infra_resource_type", "VMYSL"),
+					resource.TestCheckResourceAttr("data.ncloud_postgresql_products.all", "product_list.0.infra_resource_type", "VPGSL"),
 					resource.TestCheckResourceAttr("data.ncloud_postgresql_products.all", "product_list.0.product_type", productType),
 				),
 			},
