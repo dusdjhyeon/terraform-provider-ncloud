@@ -39,6 +39,46 @@ func (d *postgresqlProductsDataSource) Schema(ctx context.Context, req datasourc
 			"id": schema.StringAttribute{
 				Computed: true,
 			},
+			"image_product_code": schema.StringAttribute{
+				Required: true,
+			},
+			"output_file": schema.StringAttribute{
+				Optional: true,
+			},
+			"product_list": schema.ListNestedAttribute{
+				Computed: true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"product_code": schema.StringAttribute{
+							Computed: true,
+						},
+						"product_name": schema.StringAttribute{
+							Computed: true,
+						},
+						"product_type": schema.StringAttribute{
+							Computed: true,
+						},
+						"product_description": schema.StringAttribute{
+							Computed: true,
+						},
+						"infra_resource_type": schema.StringAttribute{
+							Computed: true,
+						},
+						"cpu_count": schema.Int64Attribute{
+							Computed: true,
+						},
+						"memory_size": schema.Int64Attribute{
+							Computed: true,
+						},
+						"disk_type": schema.StringAttribute{
+							Computed: true,
+						},
+					},
+				},
+			},
+		},
+		Blocks: map[string]schema.Block{
+			"filter": common.DataSourceFiltersBlock(),
 		},
 	}
 }

@@ -73,6 +73,9 @@ func (d *postgresqlDataSource) Schema(ctx context.Context, req datasource.Schema
 			"data_storage_type_code": schema.StringAttribute{
 				Computed: true,
 			},
+			"client_cidr": schema.StringAttribute{
+				Computed: true,
+			},
 			"is_multi_zone": schema.BoolAttribute{
 				Computed: true,
 			},

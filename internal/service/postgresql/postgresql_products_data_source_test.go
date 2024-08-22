@@ -9,7 +9,7 @@ import (
 )
 
 func TestAccDataSourceNcloudPostgresqlProducts_basic(t *testing.T) {
-	imageProductCode := "SW.VSVR.DBMS.LNX64.CNTOS.0708.PSTGR.1403.B050"
+	imageProductCode := "SW.VPGSL.OS.LNX64.CNTOS.0708.PGSQL.133.B050"
 	productType := "STAND"
 
 	resource.Test(t, resource.TestCase{

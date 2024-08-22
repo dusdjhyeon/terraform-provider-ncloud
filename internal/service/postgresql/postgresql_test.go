@@ -123,7 +123,7 @@ func TestAccResourceNcloudPostgresql_error_case(t *testing.T) {
 			},
 			{
 				Config:      testAccPostgresqlVpcConfigErrorCaseWhenIsHaSetTrue(testPostgresqlName),
-				ExpectError: regexp.MustCompile("when `is_ha` is true, `is_backup` must be true or not be inputted"),
+				ExpectError: regexp.MustCompile("when `is_ha` is true, `is_backup` must be true or not be input"),
 			},
 		},
 	})
@@ -327,7 +327,7 @@ resource "ncloud_postgresql" "postgresql" {
 	database_name = "test_db"
 
 	is_ha = false
-	standby_master_subnet_no = "12346" 
+	secondary_subnet_no = "12346" 
 }
 `, name)
 }

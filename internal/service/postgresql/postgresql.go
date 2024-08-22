@@ -230,25 +230,25 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					int64validator.Between(1, 30),
 				},
 			},
-			// "backup_file_storage_count": schema.Int64Attribute{
-			// 	Optional: true,
-			// 	Computed: true,
-			// 	PlanModifiers: []planmodifier.Int64{
-			// 		int64planmodifier.UseStateForUnknown(),
-			// 		int64planmodifier.RequiresReplace(),
-			// 	},
-			// 	Validators: []validator.Int64{
-			// 		int64validator.Between(1, 30),
-			// 	},
-			// },
-			// "is_backup_file_compression": schema.BoolAttribute{
-			// 	Optional: true,
-			// 	Computed: true,
-			// 	PlanModifiers: []planmodifier.Bool{
-			// 		boolplanmodifier.RequiresReplace(),
-			// 	},
-			// 	Description: "default: true",
-			// },
+			"backup_file_storage_count": schema.Int64Attribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+					int64planmodifier.RequiresReplace(),
+				},
+				Validators: []validator.Int64{
+					int64validator.Between(1, 30),
+				},
+			},
+			"is_backup_file_compression": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.RequiresReplace(),
+				},
+				Description: "default: true",
+			},
 			"is_automatic_backup": schema.BoolAttribute{
 				Optional: true,
 				PlanModifiers: []planmodifier.Bool{
@@ -476,13 +476,13 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 		reqParams.IsAutomaticBackup = plan.IsAutomaticBackup.ValueBoolPointer()
 	}
 
-	// if !plan.IsBackupFileCompression.IsNull() && !plan.IsBackupFileCompression.IsUnknown() {
-	// 	reqParams.IsBackupFileCompression = plan.IsBackupFileCompression.ValueBoolPointer()
-	// }
+	if !plan.IsBackupFileCompression.IsNull() && !plan.IsBackupFileCompression.IsUnknown() {
+		reqParams.IsBackupFileCompression = plan.IsBackupFileCompression.ValueBoolPointer()
+	}
 
-	// if !plan.BackupFileStorageCount.IsNull() && !plan.BackupFileStorageCount.IsUnknown() {
-	// 	reqParams.BackupFileStorageCount = ncloud.Int32(int32(plan.BackupFileStorageCount.ValueInt64()))
-	// }
+	if !plan.BackupFileStorageCount.IsNull() && !plan.BackupFileStorageCount.IsUnknown() {
+    	reqParams.BackupFileStorageCount = ncloud.Int32(int32(plan.BackupFileStorageCount.ValueInt64()))
+	}
 
 	if reqParams.IsBackup == nil || *reqParams.IsBackup {
 		if reqParams.IsAutomaticBackup == nil || *reqParams.IsAutomaticBackup {
@@ -712,9 +712,9 @@ type postgresqlResourceModel struct {
 	IsStorageEncryption       types.Bool   `tfsdk:"is_storage_encryption"`
 	IsBackup                  types.Bool   `tfsdk:"is_backup"`
 	BackupTime                types.String `tfsdk:"backup_time"`
-	//BackupFileStorageCount    types.Int64  `tfsdk:"backup_file_storage_count"`
+	BackupFileStorageCount    types.Int64  `tfsdk:"backup_file_storage_count"`
 	BackupFileRetentionPeriod types.Int64  `tfsdk:"backup_file_retention_period"`
-	//IsBackupFileCompression   types.Bool   `tfsdk:"is_backup_file_compression"`
+	IsBackupFileCompression   types.Bool   `tfsdk:"is_backup_file_compression"`
 	IsAutomaticBackup         types.Bool   `tfsdk:"is_automatic_backup"`
 	Port                      types.Int64  `tfsdk:"port"`
 	ClientCidr                types.String `tfsdk:"client_cidr"`
@@ -774,8 +774,8 @@ func (r *postgresqlResourceModel) refreshFromOutput(ctx context.Context, output 
 	r.Port = common.Int64ValueFromInt32(output.CloudPostgresqlPort)
 	r.BackupTime = types.StringPointerValue(output.BackupTime)
 	r.BackupFileRetentionPeriod = common.Int64ValueFromInt32(output.BackupFileRetentionPeriod)
-	//r.IsBackupFileCompression
-	//r.BackupFileStorageCount
+	r.IsBackupFileCompression = types.BoolPointerValue(output.IsBackupFileCompression)
+	r.BackupFileStorageCount = common.Int64ValueFromInt32(output.BackupFileStorageCount)
 	r.IsStorageEncryption = types.BoolPointerValue(output.CloudPostgresqlServerInstanceList[0].IsStorageEncryption)
 	r.EngineVersion = types.StringPointerValue(output.EngineVersion)
 
