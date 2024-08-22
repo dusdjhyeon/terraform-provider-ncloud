@@ -12,7 +12,7 @@ Get a list of PostgreSQL products.
 
 ```terraform
 data "ncloud_postgresql_products" "all" {
-    image_product_code = "SW.VSVR.DBMS.LNX64.CNTOS.0708.PSTGR.1403.B050"
+    image_product_code = "SW.VPGSL.OS.LNX64.CNTOS.0708.PGSQL.133.B050"
 
     filter {
         name = "product_type" 
