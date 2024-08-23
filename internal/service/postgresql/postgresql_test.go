@@ -118,10 +118,6 @@ func TestAccResourceNcloudPostgresql_error_case(t *testing.T) {
 				ExpectError: regexp.MustCompile("when `is_ha` is false, `secondary_subnet_no` is not used"),
 			},
 			{
-				Config:      testAccPostgresqlVpcConfigErrorCaseWhenIsHaSetFalse3(testPostgresqlName),
-				ExpectError: regexp.MustCompile("when `is_ha` is false, can't set true for `is_storage_encryption`"),
-			},
-			{
 				Config:      testAccPostgresqlVpcConfigErrorCaseWhenIsHaSetTrue(testPostgresqlName),
 				ExpectError: regexp.MustCompile("when `is_ha` is true, `is_backup` must be true or not be input"),
 			},
@@ -333,24 +329,6 @@ resource "ncloud_postgresql" "postgresql" {
 
 	is_ha = false
 	secondary_subnet_no = "12346" 
-}
-`, name)
-}
-
-func testAccPostgresqlVpcConfigErrorCaseWhenIsHaSetFalse3(name string) string {
-	return testAccPostgresqlVpcConfigBase(name) + fmt.Sprintf(`
-resource "ncloud_postgresql" "postgresql" {
-	vpc_no = ncloud_vpc.test_vpc.vpc_no
-	subnet_no = ncloud_subnet.test_subnet.id
-	service_name = "%[1]s"
-	server_name_prefix = "testprefix"
-	user_name = "testusername"
-	user_password = "t123456789!"
-	client_cidr = "0.0.0.0/0"
-	database_name = "test_db"
-
-	is_ha = false
-	is_storage_encryption = true 
 }
 `, name)
 }

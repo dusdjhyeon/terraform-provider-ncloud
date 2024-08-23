@@ -406,14 +406,16 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 	if !plan.DataStorageTypeCode.IsNull() {
 		reqParams.DataStorageTypeCode = plan.DataStorageTypeCode.ValueStringPointer()
 	}
+
+	if !plan.IsStorageEncryption.IsNull() && !plan.IsStorageEncryption.IsUnknown() {
+		reqParams.IsStorageEncryption = plan.IsStorageEncryption.ValueBoolPointer()
+	}
+
 	if !plan.IsHa.IsNull() && !plan.IsHa.IsUnknown() {
 		reqParams.IsHa = plan.IsHa.ValueBoolPointer()
 		if plan.IsHa.ValueBool() {
 			if !plan.IsMultiZone.IsNull() && !plan.IsMultiZone.IsUnknown() {
 				reqParams.IsMultiZone = plan.IsMultiZone.ValueBoolPointer()
-			}
-			if !plan.IsStorageEncryption.IsNull() && !plan.IsStorageEncryption.IsUnknown() {
-				reqParams.IsStorageEncryption = plan.IsStorageEncryption.ValueBoolPointer()
 			}
 			if !plan.IsBackup.IsNull() && !plan.IsBackup.IsUnknown() && !plan.IsBackup.ValueBool() {
 				resp.Diagnostics.AddError(
@@ -428,13 +430,6 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 				resp.Diagnostics.AddError(
 					"CREATING ERROR",
 					"when `is_ha` is false, `is_multi_zone` parameter is not used",
-				)
-				return
-			}
-			if !plan.IsStorageEncryption.IsNull() && !plan.IsStorageEncryption.IsUnknown() && plan.IsStorageEncryption.ValueBool() {
-				resp.Diagnostics.AddError(
-					"CREATING ERROR",
-					"when `is_ha` is false, can't set true for `is_storage_encryption`",
 				)
 				return
 			}
