@@ -40,7 +40,7 @@ list_image = {
 
 The following arguments are supported:
 
-* `image_product_code` - (Required) Youc an get one from `data.ncloud_postgresql_image_products`, This is a required value, and each available PostgreSQL's specification varies depending on the PostgreSQL image product.
+* `image_product_code` - (Required) Youc can get one from `data.ncloud_postgresql_image_products`, This is a required value, and each available PostgreSQL's specification varies depending on the PostgreSQL image product.
 * `output_file` - (Optional) The name of file that can save data source after running `terraform plan`.
 * `filter` - (Optional) Custom filter block as described below.
   * `name` - (Required) The name of the field to filter by

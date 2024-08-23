@@ -53,6 +53,7 @@ resource "ncloud_subnet" "test_subnet" {
 }
 
 resource "ncloud_postgresql" "postgresql" {
+    vpc_no = ncloud_vpc.test_vpc.vpc_no
 	subnet_no = ncloud_subnet.test_subnet.id
 	service_name = "%[1]s"
 	server_name_prefix = "testprefix"

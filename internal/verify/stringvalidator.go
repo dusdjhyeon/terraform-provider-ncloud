@@ -35,6 +35,7 @@ func ValidateEmptyStringElement(i []interface{}) error {
 	return nil
 }
 
+// Check that the attribute does not contain a specific string 
 type notContainValidator struct {
     target string
 }

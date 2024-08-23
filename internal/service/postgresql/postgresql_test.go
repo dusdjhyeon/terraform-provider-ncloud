@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
@@ -196,6 +196,7 @@ resource "ncloud_subnet" "test_subnet" {
 }
 
 resource "ncloud_postgresql" "postgresql" {
+	vpc_no = ncloud_vpc.test_vpc.vpc_no
 	subnet_no = ncloud_subnet.test_subnet.id
 	service_name = "%[1]s"
 	server_name_prefix = "testprefix"
@@ -224,6 +225,7 @@ resource "ncloud_subnet" "test_subnet" {
 }
 
 resource "ncloud_postgresql" "postgresql" {
+	vpc_no = ncloud_vpc.test_vpc.vpc_no
 	subnet_no = ncloud_subnet.test_subnet.id
 	service_name = "%[1]s"
 	server_name_prefix = "testprefix"
@@ -264,6 +266,7 @@ resource "ncloud_subnet" "test_secondary_subnet" {
 }
 
 resource "ncloud_postgresql" "postgresql" {
+	vpc_no = ncloud_vpc.test_vpc.vpc_no
 	subnet_no = ncloud_subnet.test_subnet.id
 	service_name = "%[1]s"
 	server_name_prefix = "testprefix"
@@ -301,6 +304,7 @@ resource "ncloud_subnet" "test_subnet" {
 func testAccPostgresqlVpcConfigErrorCaseWhenIsHaSetFalse1(name string) string {
 	return testAccPostgresqlVpcConfigBase(name) + fmt.Sprintf(`
 resource "ncloud_postgresql" "postgresql" {
+	vpc_no = ncloud_vpc.test_vpc.vpc_no
 	subnet_no = ncloud_subnet.test_subnet.id
 	service_name = "%[1]s"
 	server_name_prefix = "testprefix"
@@ -318,6 +322,7 @@ resource "ncloud_postgresql" "postgresql" {
 func testAccPostgresqlVpcConfigErrorCaseWhenIsHaSetFalse2(name string) string {
 	return testAccPostgresqlVpcConfigBase(name) + fmt.Sprintf(`
 resource "ncloud_postgresql" "postgresql" {
+	vpc_no = ncloud_vpc.test_vpc.vpc_no
 	subnet_no = ncloud_subnet.test_subnet.id
 	service_name = "%[1]s"
 	server_name_prefix = "testprefix"
@@ -335,6 +340,7 @@ resource "ncloud_postgresql" "postgresql" {
 func testAccPostgresqlVpcConfigErrorCaseWhenIsHaSetFalse3(name string) string {
 	return testAccPostgresqlVpcConfigBase(name) + fmt.Sprintf(`
 resource "ncloud_postgresql" "postgresql" {
+	vpc_no = ncloud_vpc.test_vpc.vpc_no
 	subnet_no = ncloud_subnet.test_subnet.id
 	service_name = "%[1]s"
 	server_name_prefix = "testprefix"
@@ -352,6 +358,7 @@ resource "ncloud_postgresql" "postgresql" {
 func testAccPostgresqlVpcConfigErrorCaseWhenIsHaSetTrue(name string) string {
 	return testAccPostgresqlVpcConfigBase(name) + fmt.Sprintf(`
 resource "ncloud_postgresql" "postgresql" {
+	vpc_no = ncloud_vpc.test_vpc.vpc_no
 	subnet_no = ncloud_subnet.test_subnet.id
 	service_name = "%[1]s"
 	server_name_prefix = "testprefix"

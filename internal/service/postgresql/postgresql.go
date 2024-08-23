@@ -115,11 +115,11 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					),
 				},
 			},
-			"region_code": schema.StringAttribute{
-				Computed: true,
-			},
 			"vpc_no": schema.StringAttribute{
-				Computed: true,
+				Required: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"subnet_no": schema.StringAttribute{
 				Required: true,
@@ -481,7 +481,7 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	if !plan.BackupFileStorageCount.IsNull() && !plan.BackupFileStorageCount.IsUnknown() {
-    	reqParams.BackupFileStorageCount = ncloud.Int32(int32(plan.BackupFileStorageCount.ValueInt64()))
+		reqParams.BackupFileStorageCount = ncloud.Int32(int32(plan.BackupFileStorageCount.ValueInt64()))
 	}
 
 	if reqParams.IsBackup == nil || *reqParams.IsBackup {
@@ -701,7 +701,6 @@ type postgresqlResourceModel struct {
 	DatabaseName              types.String `tfsdk:"database_name"`
 	VpcNo                     types.String `tfsdk:"vpc_no"`
 	SubnetNo                  types.String `tfsdk:"subnet_no"`
-	RegionCode                types.String `tfsdk:"region_code"`
 	ImageProductCode          types.String `tfsdk:"image_product_code"`
 	ProductCode               types.String `tfsdk:"product_code"`
 	SecondarySubnetNo         types.String `tfsdk:"secondary_subnet_no"`
@@ -767,7 +766,6 @@ func (r *postgresqlResourceModel) refreshFromOutput(ctx context.Context, output 
 	r.ImageProductCode = types.StringPointerValue(output.CloudPostgresqlImageProductCode)
 	r.VpcNo = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].VpcNo)
 	r.SubnetNo = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].SubnetNo)
-	r.RegionCode = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].RegionCode)
 	r.IsMultiZone = types.BoolPointerValue(output.IsMultiZone)
 	r.IsHa = types.BoolPointerValue(output.IsHa)
 	r.IsBackup = types.BoolPointerValue(output.IsBackup)
