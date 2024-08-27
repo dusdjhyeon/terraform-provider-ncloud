@@ -17,6 +17,9 @@ import (
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/framework"
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/vpc"
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/verify"
+	"github.com/terraform-providers/terraform-provider-ncloud/internal/verify/verifybool"
+	"github.com/terraform-providers/terraform-provider-ncloud/internal/verify/verifyint64"
+	"github.com/terraform-providers/terraform-provider-ncloud/internal/verify/verifystring"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -24,6 +27,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -158,7 +162,7 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 						stringvalidator.RegexMatches(regexp.MustCompile(`\d+`), "Must have at least one number"),
 						stringvalidator.RegexMatches(regexp.MustCompile(`[~!@#$%^*()\-_=\[\]\{\};:,.<>?]+`), "Must have at least one special character"),
 						stringvalidator.RegexMatches(regexp.MustCompile(`^[^&+\\"'/\s`+"`"+`]*$`), "Must not have ` & + \\ \" ' / and white space."),
-						verify.NotContain(path.MatchRoot("user_name").String()),
+						verifystring.NotContain(path.MatchRoot("user_name").String()),
 					),
 				},
 				Sensitive: true,
@@ -177,21 +181,26 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"is_multi_zone": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.RequiresReplace(),
-				},
-				Description: "default: false",
-			},
 			"is_ha": schema.BoolAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.RequiresReplace(),
 				},
-				Description: "default: true",
+				Default: booldefault.StaticBool(true),
+			},
+			"is_multi_zone": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.RequiresReplace(),
+				},
+				Validators: []validator.Bool{
+					verifybool.RequiresIfTrue(path.Expressions{
+						path.MatchRoot("is_ha"),
+					}...),
+				},
+				Description: "default: false",
 			},
 			"is_storage_encryption": schema.BoolAttribute{
 				Optional: true,
@@ -208,7 +217,7 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.RequiresReplace(),
 				},
-				Description: "default: true",
+				Default: booldefault.StaticBool(true),
 			},
 			"backup_time": schema.StringAttribute{
 				Optional: true,
@@ -216,6 +225,11 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
+				},
+				Validators: []validator.String{
+					verifystring.RequiresIfTrue(path.Expressions{
+						path.MatchRoot("is_backup"),
+					}...),
 				},
 				Description: "ex) 01:15",
 			},
@@ -227,7 +241,12 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					int64planmodifier.RequiresReplace(),
 				},
 				Validators: []validator.Int64{
-					int64validator.Between(1, 30),
+					int64validator.All(
+						int64validator.Between(1, 30),
+						verifyint64.RequiresIfTrue(path.Expressions{
+							path.MatchRoot("is_backup"),
+						}...),
+					),
 				},
 			},
 			"backup_file_storage_count": schema.Int64Attribute{
@@ -238,7 +257,12 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					int64planmodifier.RequiresReplace(),
 				},
 				Validators: []validator.Int64{
-					int64validator.Between(1, 30),
+					int64validator.All(
+						int64validator.Between(1, 30),
+						verifyint64.RequiresIfTrue(path.Expressions{
+							path.MatchRoot("is_backup"),
+						}...),
+					),
 				},
 			},
 			"is_backup_file_compression": schema.BoolAttribute{
@@ -247,12 +271,22 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.RequiresReplace(),
 				},
+				Validators: []validator.Bool{
+					verifybool.RequiresIfTrue(path.Expressions{
+						path.MatchRoot("is_backup"),
+					}...),
+				},
 				Description: "default: true",
 			},
 			"is_automatic_backup": schema.BoolAttribute{
 				Optional: true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.RequiresReplace(),
+				},
+				Validators: []validator.Bool{
+					verifybool.RequiresIfTrue(path.Expressions{
+						path.MatchRoot("is_backup"),
+					}...),
 				},
 				Description: "default: true",
 			},
