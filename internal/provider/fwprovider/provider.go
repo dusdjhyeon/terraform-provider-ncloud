@@ -19,6 +19,7 @@ import (
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/redis"
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/server"
 	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/vpc"
+	"github.com/terraform-providers/terraform-provider-ncloud/internal/service/autoscaling"
 )
 
 func New(primary interface{ Meta() interface{} }) provider.Provider {
@@ -128,6 +129,7 @@ func (p *fwprovider) Resources(ctx context.Context) []func() resource.Resource {
 	resources = append(resources, redis.NewRedisResource)
 	resources = append(resources, mssql.NewMssqlResource)
 	resources = append(resources, postgresql.NewPostgresqlResource)
+	resources = append(resources, autoscaling.NewAutoScalingGroupResource)
 
 	if err := errs.ErrorOrNil(); err != nil {
 		tflog.Warn(ctx, "registering resources", map[string]interface{}{
