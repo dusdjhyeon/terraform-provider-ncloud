@@ -136,6 +136,13 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
+				Validators: []validator.String{
+					stringvalidator.All(
+						verifystring.RequiresIfTrue(path.Expressions{
+							path.MatchRoot("is_ha"),
+						}...),
+					),
+				},
 			},
 			"user_name": schema.StringAttribute{
 				Required: true,
@@ -298,8 +305,10 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					int64planmodifier.RequiresReplace(),
 				},
 				Validators: []validator.Int64{
-					int64validator.Between(10000, 20000),
-					int64validator.OneOf(5432),
+					int64validator.Any(
+						int64validator.Between(10000, 20000),
+						int64validator.OneOf(5432),
+					),
 				},
 				Description: "default: 5432",
 			},
