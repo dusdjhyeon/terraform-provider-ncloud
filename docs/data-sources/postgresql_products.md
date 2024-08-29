@@ -12,7 +12,7 @@ Get a list of PostgreSQL products.
 
 ```terraform
 data "ncloud_postgresql_products" "all" {
-    image_product_code = "SW.VPGSL.OS.LNX64.CNTOS.0708.PGSQL.133.B050"
+    image_product_code = "SW.VPGSL.OS.LNX64.ROCKY.0810.PGSQL.B050"
 
     filter {
         name = "product_type" 
@@ -33,7 +33,7 @@ output "product_list" {
 Outputs:
 `terraform
 list_image = {
-    "vCPU 2EA, Memory 8G" = "SVR.VSVR.STAND.C002.M008.NET.SSD.B050.G002"
+    "vCPU 2EA, Memory 8G" = "SVR.VPGSL.DBSVR.STAND.C002.M008.NET.SSD.B050.G002"
 }
 
 ## Argument Reference
@@ -56,6 +56,7 @@ This data source exports the following attributes in addition to the argument ab
   * `product_code` - Product code.
   * `product_type` - Product type code.
   * `product_description` - Product description.
+  * `engine_version_code` - The engine version of the specific PostgreSQL.
   * `infra_resource_type` - Infra resource type code.
   * `cpu_count` - CPU count.
   * `memory_size` - Memory size.

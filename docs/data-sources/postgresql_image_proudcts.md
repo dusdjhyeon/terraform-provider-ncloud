@@ -18,7 +18,7 @@ data "ncloud_postgresql_image_products" "example" {
 output "image_list" {
     value = {
         for image in data.ncloud_postgresql_image_products.example.image_product_list:
-        image.product_name => image.product_code 
+        image.product_name => image.engine_version_code
     }
 }
 ```
@@ -27,7 +27,7 @@ output "image_list" {
 data "ncloud_postgresql_image_products" "example" {
     filter {
         name = "product_code"
-        values = ["SW.VPGSL.OS.LNX64.CNTOS.0708.PGSQL.133.B050"]
+        values = ["PostgreSQL"]
     }
 }
 ```
@@ -35,7 +35,9 @@ data "ncloud_postgresql_image_products" "example" {
 Outputs:
 ```terraform
 image_list = {
-    "postgresql(13.3)": "SW.VPGSL.OS.LNX64.CNTOS.0708.PGSQL.133.B050",
+    "SW.VPGSL.OS.LNX64.ROCKY.0810.PGSQL.B050":"13.15",
+    "SW.VPGSL.OS.LNX64.ROCKY.0810.PGSQL.B050":"13.13",
+    "SW.VPGSL.OS.LNX64.ROCKY.0810.PGSQL.B050":"13.10",
 }
 ```
 

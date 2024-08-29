@@ -2,7 +2,7 @@
 subcategory: "PostgreSQL"
 ---
 
-# Data Source: ncloud_postbresql
+# Data Source: ncloud_postgresql
 
 This moudule can be useful for getting detail of PostgreSQL created before.
 
@@ -35,7 +35,6 @@ This data source exports the following attributes in addition to the argument ab
 
 * `region_code` - Region code.
 * `vpc_no` - The ID of the associated VPC.
-* `subnet_no` - Number of the associated Subnet.
 * `image_product_code` - The image product code of the PostgreSQL instance.
 * `product_code` - Server specifications of the Cloud DB for PostgreSQL instance.
 * `data_storage_type` - The type of data storage.
@@ -54,6 +53,7 @@ This data source exports the following attributes in addition to the argument ab
   * `server_instance_no` - Server instance number.
   * `server_name` - Server name.
   * `server_role` - Server role code. M(Primary), H(Secondary)
+  * `subnet_no` - Number of the associated Subnet.
   * `product_code` - Product code.
   * `is_public_subnet` - Public subnet status.
   * `public_domain` - Public domain.

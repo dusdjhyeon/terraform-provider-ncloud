@@ -47,6 +47,7 @@ The following arguments are supported:
 * `image_product_code` - (Optional) Image product code to determine the PostgreSQL instance server image specification to create. If not entered, the instance is created for default value. It can be obtained through [`ncloud_postgresql_image_products` data source](../data-sources/postgresql_image_products.md)
 * `product_code` - (Optional) Product code to determine the PostgreSQL instance server image specification to create. It can be obtained through [`ncloud_postgresql_products` data source](../data-sources/postgresql_products.md). Default: Minimum specifications(1 memory, 2 cpu)
 * `data_storage_type_code` - (Optional) Data storage type. You can select `SSD|HDD`. Default: SSD
+* `engine_version_code` - PostgreSQL Engine version code.
 * `is_ha` - (Optional) High-availability (true/false). If high availability is selected, 2 servers including a Secondary server are generated, and additional fees are incurred. If the high availability status `is_ha` is false, `is_multi_zone` and `secondary_subnet_no` parameters are not used. Default: true.
 * `is_multi_zone` - (Optional) Multi-zone (true/false). If the high availability status `is_ha` is true, multi-zone can be selected. If multi-zone is selected, Primary server and Secondary server are generated in mutually different zones, providing higher availability. Default: false 
 * `is_storage_encryption` - (Optional) Whether data storage encryption is applied. If encryption is applied, DB data is encrypted and stored in storage. After Cloud DB for PostgreSQL instance is generated, storage encryption setting cannot be changed. Not available in Neurocloud environment.
@@ -63,8 +64,7 @@ The following arguments are supported:
 
 In addition to all arguments above, the following attributes are exported
 
-* `id` - PostgreSQL Instance Number.
-* `engine_version_code` - PostgreSQL Engine version code.
+* `id` - PostgreSQL Instance Number. 
 * `region_code` - Region code.
 * `vpc_no` - The ID of the associated Vpc.
 * `access_control_group_no_list` - The ID list of the associated Access Control Group.
@@ -72,7 +72,8 @@ In addition to all arguments above, the following attributes are exported
 * `postgresql_server_list` - The list of the PostgreSQL server.
   * `server_instance_no` - Server instance number.
   * `server_name` - Server name.
-  * `server_role` - Server role code. M(Primary), H(Secondary)
+  * `server_role` - Server role code. M(Primary), H(Secondary), S(Read Replica)
+  * `zone_code` - Zone code. 
   * `product_code` - Product code.
   * `is_public_subnet` - Public subnet status.
   * `public_domain` - Public domain.
