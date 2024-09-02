@@ -106,6 +106,9 @@ func (r *postgresqlResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				},
 			},
 			"id": framework.IDAttribute(),
+			"postgresql_instance_no": schema.StringAttribute{
+				Computed: true,
+			},
 			"database_name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
@@ -734,6 +737,7 @@ func waitPostgresqlDeletion(ctx context.Context, config *conn.ProviderConfig, id
 
 type postgresqlResourceModel struct {
 	ID                        types.String `tfsdk:"id"`
+	PostgresqlInstanceNo      types.String `tfsdk:"postgresql_instance_no"`
 	ServiceName               types.String `tfsdk:"service_name"`
 	ServerNamePrefix          types.String `tfsdk:"server_name_prefix"`
 	DatabaseName              types.String `tfsdk:"database_name"`
@@ -800,6 +804,7 @@ func (r postgresqlServer) attrTypes() map[string]attr.Type {
 
 func (r *postgresqlResourceModel) refreshFromOutput(ctx context.Context, output *vpostgresql.CloudPostgresqlInstance) {
 	r.ID = types.StringPointerValue(output.CloudPostgresqlInstanceNo)
+	r.PostgresqlInstanceNo = types.StringPointerValue(output.CloudPostgresqlInstanceNo)
 	r.ServiceName = types.StringPointerValue(output.CloudPostgresqlServiceName)
 	r.ImageProductCode = types.StringPointerValue(output.CloudPostgresqlImageProductCode)
 	r.VpcNo = types.StringPointerValue(output.CloudPostgresqlServerInstanceList[0].VpcNo)
