@@ -572,7 +572,7 @@ func (r *postgresqlResource) Create(ctx context.Context, req resource.CreateRequ
 	postgresqlIns := response.CloudPostgresqlInstanceList[0]
 	plan.ID = types.StringPointerValue(postgresqlIns.CloudPostgresqlInstanceNo)
 
-	output, err := waitPostgresqlCreation(ctx, r.config, *postgresqlIns.CloudPostgresqlInstanceNo)
+	output, err := WaitPostgresqlCreation(ctx, r.config, *postgresqlIns.CloudPostgresqlInstanceNo)
 	if err != nil {
 		resp.Diagnostics.AddError("WAITING FOR CREATION ERROR", err.Error())
 		return
@@ -659,7 +659,7 @@ func GetPostgresqlInstance(ctx context.Context, config *conn.ProviderConfig, no 
 	return resp.CloudPostgresqlInstanceList[0], nil
 }
 
-func waitPostgresqlCreation(ctx context.Context, config *conn.ProviderConfig, id string) (*vpostgresql.CloudPostgresqlInstance, error) {
+func WaitPostgresqlCreation(ctx context.Context, config *conn.ProviderConfig, id string) (*vpostgresql.CloudPostgresqlInstance, error) {
 	var postgresqlInstance *vpostgresql.CloudPostgresqlInstance
 	stateConf := &retry.StateChangeConf{
 		Pending: []string{"creating", "settingUp"},
@@ -714,17 +714,19 @@ func waitPostgresqlDeletion(ctx context.Context, config *conn.ProviderConfig, id
 				return instance, "deleted", nil
 			}
 
-			status := instance.CloudPostgresqlInstanceStatus.Code
-			op := instance.CloudPostgresqlInstanceOperation.Code
+			status := instance.CloudPostgresqlInstanceStatusName
+			if *status == "deleting" {
+				return instance, "deleting", nil
+			}
 
-			if *status == "DEL" && *op == "DEL" {
+			if *status == "deleted" {
 				return instance, "deleting", nil
 			}
 
 			return 0, "", fmt.Errorf("error occurred while waiting to delete postgresql")
 		},
 		Timeout:    conn.DefaultTimeout,
-		Delay:      2 * time.Second,
+		Delay:      5 * time.Second,
 		MinTimeout: 3 * time.Second,
 	}
 
