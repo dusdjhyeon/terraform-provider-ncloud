@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"strconv"
+	//"strconv"
 	"time"
 
 	"github.com/NaverCloudPlatform/ncloud-sdk-go-v2/ncloud"
@@ -192,11 +192,12 @@ func resourceNcloudAccessControlGroupRuleRead(d *schema.ResourceData, meta inter
 
 	for _, r := range rules {
 		var protocol string
-		if allowedProtocolCodes[*r.ProtocolType.Code] {
-			protocol = *r.ProtocolType.Code
-		} else {
-			protocol = strconv.Itoa(int(*r.ProtocolType.Number))
-		}
+		protocol = *r.ProtocolType.Code
+		//if allowedProtocolCodes[*r.ProtocolType.Code] {
+			//protocol = *r.ProtocolType.Code
+		//} else {
+			//protocol = strconv.Itoa(int(*r.ProtocolType.Number))
+		//}
 
 		m := map[string]interface{}{
 			"protocol":                       protocol,
